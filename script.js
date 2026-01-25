@@ -1,6 +1,7 @@
 const airports = [
-    { code: "HND", name: "羽田空港" },
-    { code: "NRT", name: "成田国際空港" },
+    // HND and NRT removed
+    { code: "YGJ", name: "米子鬼太郎空港" },
+    { code: "IWK", name: "岩国錦帯橋空港" },
     { code: "KIX", name: "関西国際空港" },
     { code: "ITM", name: "伊丹空港" },
     { code: "CTS", name: "新千歳空港" },
@@ -156,13 +157,22 @@ function startGame() {
     loadQuestion();
 }
 
+// Fisher-Yates Shuffle
+function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+}
+
 function generateQuestions(count) {
-    const shuffled = [...airports].sort(() => 0.5 - Math.random());
+    const shuffled = shuffleArray([...airports]);
     return shuffled.slice(0, count).map(correct => {
         // Generate options: 1 correct + 3 wrong
         const others = airports.filter(a => a.code !== correct.code);
-        const wrongOptions = others.sort(() => 0.5 - Math.random()).slice(0, 3);
-        const options = [correct, ...wrongOptions].sort(() => 0.5 - Math.random());
+        const wrongOptions = shuffleArray(others).slice(0, 3);
+        const options = shuffleArray([correct, ...wrongOptions]);
         return {
             target: correct,
             options: options
@@ -301,7 +311,7 @@ function submitAnswer() {
     setTimeout(() => {
         gameState.currentQuestionIndex++;
         loadQuestion();
-    }, 2000); // 2 seconds to see the result
+    }, 1000); // 1 second to see the result
 }
 
 function handleTimeout() {
@@ -324,7 +334,7 @@ function handleTimeout() {
     setTimeout(() => {
         gameState.currentQuestionIndex++;
         loadQuestion();
-    }, 2000);
+    }, 1000);
 }
 
 function endGame() {
