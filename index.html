@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Airport Code Quiz</title>
+    <meta name="description" content="日本の空港識別コード（3レターコード）を楽しく学ぶクイズゲーム。">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700&family=Zen+Kaku+Gothic+New:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="background-animation"></div>
+    <div class="container">
+        <!-- Start Screen -->
+        <section id="start-screen" class="screen active">
+            <h1>Airport Code Quiz</h1>
+            <p>日本の空港識別コードをマスターしよう！</p>
+            
+            <div class="settings">
+                <div class="control-group">
+                    <label for="mode-select">Game Mode</label>
+                    <div class="mode-toggle">
+                        <input type="radio" id="mode-normal" name="mode" value="normal" checked>
+                        <label for="mode-normal" class="mode-btn">
+                            <span class="mode-title">Normal</span>
+                            <span class="mode-desc">Code → Name</span>
+                        </label>
+                        
+                        <input type="radio" id="mode-hard" name="mode" value="hard">
+                        <label for="mode-hard" class="mode-btn">
+                            <span class="mode-title">Hard</span>
+                            <span class="mode-desc">Name → Code</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label for="time-setting">Timer (sec)</label>
+                    <div class="slider-container">
+                        <input type="range" id="time-setting" min="3" max="30" value="10" step="1">
+                        <span id="time-display">10s</span>
+                    </div>
+                </div>
+            </div>
+
+            <button id="start-btn" class="primary-btn">Start Game</button>
+        </section>
+
+        <!-- Quiz Screen -->
+        <section id="quiz-screen" class="screen">
+            <div class="hud">
+                <div class="progress">
+                    Question: <span id="current-q">1</span>/5
+                </div>
+                <div class="timer">
+                    <svg viewBox="0 0 36 36" class="circular-chart">
+                        <path class="circle-bg"
+                            d="M18 2.0845
+                            a 15.9155 15.9155 0 0 1 0 31.831
+                            a 15.9155 15.9155 0 0 1 0 -31.831"
+                        />
+                        <path class="circle"
+                            stroke-dasharray="100, 100"
+                            d="M18 2.0845
+                            a 15.9155 15.9155 0 0 1 0 31.831
+                            a 15.9155 15.9155 0 0 1 0 -31.831"
+                        />
+                    </svg>
+                    <span id="timer-text">10</span>
+                </div>
+            </div>
+
+            <div class="question-container">
+                <h2 id="question-text">HND</h2>
+                <p id="question-label">Which airport is this?</p>
+            </div>
+
+            <div id="options-grid" class="options-grid">
+                <!-- Options will be injected via JS -->
+            </div>
+        </section>
+
+        <!-- Result Screen -->
+        <section id="result-screen" class="screen">
+            <h2>Result</h2>
+            <div class="score-container">
+                <div class="score-label">Your Score</div>
+                <div class="score-value"><span id="final-score">0</span><span class="max-score">/5</span></div>
+            </div>
+            <p id="feedback-msg">Good Job!</p>
+            
+            <button id="restart-btn" class="primary-btn">Play Again</button>
+        </section>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
