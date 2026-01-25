@@ -1,23 +1,27 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Airport Code Quiz</title>
-    <meta name="description" content="日本の空港識別コード（3レターコード）を楽しく学ぶクイズゲーム。">
+    <meta name="description" content="日本の3レターコード（空港コード）を楽しく学ぶクイズゲーム。">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700&family=Zen+Kaku+Gothic+New:wght@400;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700&family=Zen+Kaku+Gothic+New:wght@400;700&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
     <div class="background-animation"></div>
     <div class="container">
         <!-- Start Screen -->
         <section id="start-screen" class="screen active">
             <h1>Airport Code Quiz</h1>
-            <p>日本の空港識別コードをマスターしよう！</p>
-            
+            <p>日本の3レターコード（空港コード）をマスターしよう！</p>
+
             <div class="settings">
                 <div class="control-group">
                     <label for="mode-select">Game Mode</label>
@@ -27,7 +31,7 @@
                             <span class="mode-title">Normal</span>
                             <span class="mode-desc">Code → Name</span>
                         </label>
-                        
+
                         <input type="radio" id="mode-hard" name="mode" value="hard">
                         <label for="mode-hard" class="mode-btn">
                             <span class="mode-title">Hard</span>
@@ -56,17 +60,12 @@
                 </div>
                 <div class="timer">
                     <svg viewBox="0 0 36 36" class="circular-chart">
-                        <path class="circle-bg"
-                            d="M18 2.0845
+                        <path class="circle-bg" d="M18 2.0845
                             a 15.9155 15.9155 0 0 1 0 31.831
-                            a 15.9155 15.9155 0 0 1 0 -31.831"
-                        />
-                        <path class="circle"
-                            stroke-dasharray="100, 100"
-                            d="M18 2.0845
+                            a 15.9155 15.9155 0 0 1 0 -31.831" />
+                        <path class="circle" stroke-dasharray="100, 100" d="M18 2.0845
                             a 15.9155 15.9155 0 0 1 0 31.831
-                            a 15.9155 15.9155 0 0 1 0 -31.831"
-                        />
+                            a 15.9155 15.9155 0 0 1 0 -31.831" />
                     </svg>
                     <span id="timer-text">10</span>
                 </div>
@@ -80,6 +79,14 @@
             <div id="options-grid" class="options-grid">
                 <!-- Options will be injected via JS -->
             </div>
+
+            <button id="answer-btn" class="primary-btn answer-btn" disabled>Answer</button>
+
+            <!-- Feedback Overlay -->
+            <div id="feedback-overlay" class="feedback-overlay">
+                <div class="feedback-icon correct">⭕</div>
+                <div class="feedback-icon wrong">❌</div>
+            </div>
         </section>
 
         <!-- Result Screen -->
@@ -90,10 +97,11 @@
                 <div class="score-value"><span id="final-score">0</span><span class="max-score">/5</span></div>
             </div>
             <p id="feedback-msg">Good Job!</p>
-            
+
             <button id="restart-btn" class="primary-btn">Play Again</button>
         </section>
     </div>
     <script src="script.js"></script>
 </body>
+
 </html>

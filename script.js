@@ -38,7 +38,44 @@ const airports = [
     { code: "FSZ", name: "静岡空港" },
     { code: "SHM", name: "南紀白浜空港" },
     { code: "AXT", name: "秋田空港" },
-    { code: "TKS", name: "徳島空港" }
+    { code: "TKS", name: "徳島空港" },
+    { code: "AGJ", name: "粟国空港" },
+    { code: "ASJ", name: "奄美空港" },
+    { code: "HAC", name: "八丈島空港" },
+    { code: "IBR", name: "茨城空港" },
+    { code: "IKI", name: "壱岐空港" },
+    { code: "IWJ", name: "石見空港" },
+    { code: "KKX", name: "喜界空港" },
+    { code: "KTD", name: "北大東空港" },
+    { code: "KKJ", name: "北九州空港" },
+    { code: "UEO", name: "久米島空港" },
+    { code: "MMJ", name: "松本空港" },
+    { code: "MMD", name: "南大東空港" },
+    { code: "MSJ", name: "三沢空港" },
+    { code: "MYE", name: "三宅島空港" },
+    { code: "MBE", name: "紋別空港" },
+    { code: "SHB", name: "中標津空港" },
+    { code: "TNE", name: "種子島空港" },
+    { code: "NTQ", name: "能登空港" },
+    { code: "OBO", name: "帯広空港" },
+    { code: "ONJ", name: "大館能代空港" },
+    { code: "OKD", name: "丘珠空港" },
+    { code: "OKE", name: "沖永良部空港" },
+    { code: "OKI", name: "隠岐空港" },
+    { code: "OIR", name: "奥尻空港" },
+    { code: "OIM", name: "大島空港" },
+    { code: "RIS", name: "利尻空港" },
+    { code: "HSG", name: "佐賀空港" },
+    { code: "SHI", name: "下地島空港" },
+    { code: "TJH", name: "但馬空港" },
+    { code: "TRA", name: "多良間空港" },
+    { code: "TKN", name: "徳之島空港" },
+    { code: "TTJ", name: "鳥取空港" },
+    { code: "TSJ", name: "対馬空港" },
+    { code: "WKJ", name: "稚内空港" },
+    { code: "KUM", name: "屋久島空港" },
+    { code: "OGN", name: "与那国空港" },
+    { code: "RNJ", name: "与論空港" }
 ];
 
 // Game State
@@ -49,7 +86,9 @@ let gameState = {
     currentQuestionIndex: 0,
     score: 0,
     timerId: null,
-    timeLeft: 0
+    timeLeft: 0,
+    selectedOption: null,
+    isSubmitted: false
 };
 
 // DOM Elements
@@ -72,7 +111,13 @@ const elements = {
     finalScore: document.getElementById('final-score'),
     feedbackMsg: document.getElementById('feedback-msg'),
     restartBtn: document.getElementById('restart-btn'),
-    modeInputs: document.querySelectorAll('input[name="mode"]')
+    modeInputs: document.querySelectorAll('input[name="mode"]'),
+    answerBtn: document.getElementById('answer-btn'),
+    feedbackOverlay: document.getElementById('feedback-overlay'),
+    feedbackIcons: {
+        correct: document.querySelector('.feedback-icon.correct'),
+        wrong: document.querySelector('.feedback-icon.wrong')
+    }
 };
 
 // Initialization
@@ -87,6 +132,7 @@ function setupEventListeners() {
 
     elements.startBtn.addEventListener('click', startGame);
     elements.restartBtn.addEventListener('click', () => switchScreen('start'));
+    elements.answerBtn.addEventListener('click', submitAnswer);
 }
 
 function switchScreen(screenName) {
@@ -100,6 +146,8 @@ function startGame() {
     gameState.timeLimit = parseInt(elements.timeSlider.value);
     gameState.score = 0;
     gameState.currentQuestionIndex = 0;
+    gameState.selectedOption = null;
+    gameState.isSubmitted = false;
 
     // Generate Questions
     gameState.currentQuestions = generateQuestions(5);
@@ -144,11 +192,19 @@ function loadQuestion() {
 
     // Render Options
     elements.optionsGrid.innerHTML = '';
+    gameState.selectedOption = null;
+    gameState.isSubmitted = false;
+    elements.answerBtn.disabled = true;
+
+    // Reset Feedback
+    elements.feedbackIcons.correct.classList.remove('show');
+    elements.feedbackIcons.wrong.classList.remove('show');
+
     q.options.forEach(opt => {
         const btn = document.createElement('button');
         btn.className = 'option-btn';
         btn.textContent = gameState.mode === 'normal' ? opt.name : opt.code;
-        btn.onclick = () => handleAnswer(opt, btn);
+        btn.onclick = () => selectOption(opt, btn);
         elements.optionsGrid.appendChild(btn);
     });
 
@@ -194,24 +250,44 @@ function stopTimer() {
     clearInterval(gameState.timerId);
 }
 
-function handleAnswer(selected, btnElement) {
-    if (btnElement.disabled) return; // Prevent double clicks
+function selectOption(opt, btnElement) {
+    if (gameState.isSubmitted) return;
 
+    // Remove selected class from others
+    const buttons = elements.optionsGrid.querySelectorAll('.option-btn');
+    buttons.forEach(b => b.classList.remove('selected'));
+
+    // Select this one
+    btnElement.classList.add('selected');
+    gameState.selectedOption = opt;
+    elements.answerBtn.disabled = false;
+}
+
+function submitAnswer() {
+    if (gameState.isSubmitted || !gameState.selectedOption) return;
+
+    gameState.isSubmitted = true;
     stopTimer();
 
-    // Disable all buttons
-    const buttons = elements.optionsGrid.querySelectorAll('.option-btn');
-    buttons.forEach(b => b.disabled = true);
-
     const q = gameState.currentQuestions[gameState.currentQuestionIndex];
-    const isCorrect = selected.code === q.target.code;
+    const isCorrect = gameState.selectedOption.code === q.target.code;
+    const buttons = elements.optionsGrid.querySelectorAll('.option-btn');
 
+    // Visual Feedback
     if (isCorrect) {
-        btnElement.classList.add('correct');
         gameState.score++;
+        elements.feedbackIcons.correct.classList.add('show');
+        // Find the button with the correct answer and mark it
+        buttons.forEach(b => {
+            if (b.classList.contains('selected')) b.classList.add('correct');
+        });
     } else {
-        btnElement.classList.add('wrong');
-        // Highlight correct answer
+        elements.feedbackIcons.wrong.classList.add('show');
+        // Find selected and mark wrong
+        buttons.forEach(b => {
+            if (b.classList.contains('selected')) b.classList.add('wrong');
+        });
+        // Highlight correct
         buttons.forEach(b => {
             const text = b.textContent;
             const correctText = gameState.mode === 'normal' ? q.target.name : q.target.code;
@@ -219,18 +295,25 @@ function handleAnswer(selected, btnElement) {
         });
     }
 
+    elements.answerBtn.disabled = true;
+
     // Wait before next question
     setTimeout(() => {
         gameState.currentQuestionIndex++;
         loadQuestion();
-    }, 1500);
+    }, 2000); // 2 seconds to see the result
 }
 
 function handleTimeout() {
-    const buttons = elements.optionsGrid.querySelectorAll('.option-btn');
-    buttons.forEach(b => b.disabled = true);
+    if (gameState.isSubmitted) return;
+    gameState.isSubmitted = true;
 
-    // Show correct answer
+    const buttons = elements.optionsGrid.querySelectorAll('.option-btn');
+    elements.answerBtn.disabled = true;
+
+    // Show correct answer and X mark (unless they selected nothing, still wrong)
+    elements.feedbackIcons.wrong.classList.add('show');
+
     const q = gameState.currentQuestions[gameState.currentQuestionIndex];
     buttons.forEach(b => {
         const text = b.textContent;
@@ -241,7 +324,7 @@ function handleTimeout() {
     setTimeout(() => {
         gameState.currentQuestionIndex++;
         loadQuestion();
-    }, 1500);
+    }, 2000);
 }
 
 function endGame() {
